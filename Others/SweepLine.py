@@ -1,4 +1,5 @@
 from queue import PriorityQueue
+#RedBlackBST.py 파일 참고
 from RedBlackBST import LLRB
 
 class Segment:

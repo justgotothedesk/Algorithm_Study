@@ -1,5 +1,4 @@
 # Class that find seam line and remove it from origin images
-
 from pathlib import Path
 from PIL import Image  # PIL (Python Image Library)
 import math
@@ -93,38 +92,48 @@ class SeamCarver:
         self.image = carvedImage
 
     def findVerticalSeam(self):
-        edgeTo = [[None] * self.width() for _ in range(self.height())]
-        distTo = [[0] * self.width() for _ in range(self.height())]
+        def energy(a, b):
+            if a == 0 or a == width - 1 or b == 0 or b == height - 1:
+                return self.MAX_ENERGY
+            pixels = self.image.load()
+            cl, cr = pixels[a - 1, b], pixels[a + 1, b]
+            cu, cd = pixels[a, b - 1], pixels[a, b + 1]
+            return int(math.sqrt((cl[0] - cr[0])**2 + (cl[1] - cr[1])**2 + (cl[2] - cr[2])**2 +
+                                (cu[0] - cd[0])**2 + (cu[1] - cd[1])**2 + (cu[2] - cd[2])**2))
 
-        for i in range(self.width()):
+        height = self.height()
+        width = self.width()
+        edgeTo = [[None] * width for _ in range(height)]
+        distTo = [[0] * width for _ in range(height)]
+
+        for i in range(width):
             edgeTo[0][i] = i
             distTo[0][i] = self.MAX_ENERGY
 
-        for y in range(1, self.height()):            
+        for y in range(1, height):
             min_result = min((distTo[y - 1][0], 0), (distTo[y - 1][1], 0 + 1))
-            distTo[y][0] = min_result[0] + self.energy(0, y)
+            distTo[y][0] = min_result[0] + energy(0, y)
             edgeTo[y][0] = min_result[1]
-            
-            for x in range(1, self.width() - 1):
+
+            for x in range(1, width - 1):
                 min_result = min((distTo[y - 1][x], x), (distTo[y - 1][x - 1], x - 1), (distTo[y - 1][x + 1], x + 1))
-                distTo[y][x] = min_result[0] + self.energy(x, y)
+                distTo[y][x] = min_result[0] + energy(x, y)
                 edgeTo[y][x] = min_result[1]
-            
-            min_result = min((distTo[y - 1][self.width() - 1], self.width() - 1),
-                            (distTo[y - 1][self.width() - 2], self.width() - 2))
-            distTo[y][self.width() - 1] = min_result[0] + self.energy(self.width() - 1, y)
-            edgeTo[y][self.width() - 1] = min_result[1]
 
-        result = [0] * self.height()
-        min_result = min(distTo[self.height() - 1])
-        x_min = distTo[self.height() - 1].index(min_result)
+            min_result = min((distTo[y - 1][width - 1], width - 1),
+                             (distTo[y - 1][width - 2], width - 2))
+            distTo[y][width - 1] = min_result[0] + energy(width - 1, y)
+            edgeTo[y][width - 1] = min_result[1]
 
-        for y in range(self.height() - 1, -1, -1):
+        result = [0] * height
+        min_result = min(distTo[height - 1])
+        x_min = distTo[height - 1].index(min_result)
+
+        for y in range(height - 1, -1, -1):
             result[y] = x_min
             x_min = edgeTo[y][x_min]
 
         return result
-
 
 
 def showBeforeAfterSeamCarving(fileName, numCarve):

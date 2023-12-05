@@ -255,46 +255,39 @@ class BaseballElimination:
     # Return (True, a list of team names responsible for the elimination), if teamName must be eliminated
     # Return (False, []), if teamName is NOT eliminated yet
     def isEliminated(self, teamName):
-        resultFlag = False
         result = []
+        temp = [team for team in self.teams if team != teamName]
 
-        # Check using trivial elimination
-        for i in range(self.numberOfTeams):
-            if self.teams[i] != teamName and self.wins[self.team2id[teamName]] + self.remaining[self.team2id[teamName]] < self.wins[i]:
-                result.append(self.teams[i])
-                resultFlag = True
+        now = self.team2id[teamName]
+        for other_team in temp:
+            number = self.team2id[other_team]
+            if self.wins[now] + self.remaining[now] < self.wins[number]:
+                result.append(other_team)
 
-        if resultFlag:
-            return resultFlag, result
+        if result:
+            return True, result
 
-        # Build FlowNetwork
-        gw = FlowNetwork(self.numberOfTeams * (self.numberOfTeams - 1) // 2 + self.numberOfTeams + 2)
-        firstTeamVertex = 1
+        n = self.numberOfTeams - 1
+        c = n * (n - 1) // 2
+        g = FlowNetwork(2 + c + n)
 
-        for i in range(self.numberOfTeams):
-            for j in range(i + 1, self.numberOfTeams):
-                if i != j and self.teams[i] != teamName and self.teams[j] != teamName:
-                    gw.addEdge(FlowEdge(0, firstTeamVertex, self.against[i][j]))
-                firstTeamVertex += 1
+        k = 1
+        for i in range(n):
+            g.addEdge(FlowEdge(c + i + 1, g.V - 1, (self.remaining[now] + self.wins[now] - self.wins[self.team2id[temp[i]]])))
+            for j in range(i + 1, n):
+                g.addEdge(FlowEdge(k, c + 1 + i, float('inf')))
+                g.addEdge(FlowEdge(0, k, self.against[self.team2id[temp[i]]][self.team2id[temp[j]]]))
+                g.addEdge(FlowEdge(k, c + 1 + j, float('inf')))
+                k += 1
 
-        for i in range(self.numberOfTeams):
-            if self.teams[i] != teamName:
-                gw.addEdge(FlowEdge(firstTeamVertex + i, gw.V - 1,
-                                    self.wins[self.team2id[teamName]] + self.remaining[self.team2id[teamName]] - self.wins[i]))
+        ff = FordFulkerson(g, 0, g.V - 1)
 
-        # Apply FordFulkerson algorithm to find maxflow-mincut
-        ff = FordFulkerson(gw, 0, gw.V - 1)
+        if not ff.hasAugmentingPath():
+            for i in range(c + 1, c + n + 1):
+                if ff.inCut(i):
+                    result.append(temp[i - c - 1])
 
-        # Check cut vertices
-        for v in range(1, gw.V - 1):
-            if ff.inCut(v) and v >= firstTeamVertex:
-                result.append(self.teams[v - firstTeamVertex])
-                resultFlag = True
-
-        return resultFlag, result
-
-
-
+        return len(result) > 0, result
 
 
 

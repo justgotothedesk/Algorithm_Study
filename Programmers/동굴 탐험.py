@@ -22,7 +22,8 @@ def solution(n, path, order):
     while q:
         now = q.popleft()
 
-        # 다음에 방문해야하는 방이 있는데 아직 방문하지 않았다면, 해당 방을 방문하기 위해 딕셔너리에 넣어준다.
+        # 현재 위치를 방문하기전에 들러야하는 정점이 존재하고 아직 그 정점을 방문하지 않았다면 체크해둔다.
+        # step[now] : now를 방문하기 위해 이전에 방문해야하는 정점
         if step[now] and not visited[step[now]]:
             after[step[now]] = now
             continue

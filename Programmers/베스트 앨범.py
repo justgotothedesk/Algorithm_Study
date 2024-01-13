@@ -4,25 +4,26 @@
 
 def solution(genres, plays):
     answer = []
-    total = {}
-    for i in range(len(genres)):
-        if genres[i] not in total:
-            total[genres[i]] = plays[i]
+    genre = {}
+    
+    for i in range(len(plays)):
+        if genres[i] not in genre:
+            genre[genres[i]] = plays[i]
         else:
-            total[genres[i]] += plays[i]
-          
-    total = sorted(total.items(), key = lambda x:-x[1])
+            genre[genres[i]] += plays[i]
     
-    new_genres = list(enumerate(list(zip(genres,plays))))
-    new_genres.sort(key = lambda x:-x[1])
+    newgenre = sorted(genre.items(), key = lambda x:-x[1])
     
-    for i in total:
-        cnt = 0
-        for j in new_genres:
-            if j[1][0] == i[0]:
-                answer.append(j[0])
-                cnt += 1
-                if cnt == 2:
-                    break
-    
+    newlist = list(enumerate(zip(genres, plays)))
+    newlist.sort(key = lambda x:[x[1], -x[0]], reverse = True)
+
+    for value, _ in newgenre:
+        count = 0
+        for idx, temp in newlist:
+            if temp[0] == value:
+                answer.append(idx)
+                count += 1
+            if count == 2:
+                break
+
     return answer

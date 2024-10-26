@@ -1,13 +1,13 @@
 def time_to_seconds(time_str):
-    minutes, seconds = map(int, time_str.split(":"))
+    min, sec = map(int, time_str.split(":"))
     
-    return minutes * 60 + seconds
+    return min*60+sec
 
-def seconds_to_time(seconds):
-    minutes = seconds // 60
-    seconds = seconds % 60
+def seconds_to_time(sec):
+    min = sec // 60
+    sec = sec % 60
     
-    return f"{minutes:02}:{seconds:02}"
+    return f"{min:02}:{sec:02}"
 
 def solution(video_len, pos, op_start, op_end, commands):
     video_len_sec = time_to_seconds(video_len)
@@ -22,5 +22,7 @@ def solution(video_len, pos, op_start, op_end, commands):
             pos_sec = min(pos_sec+10, video_len_sec)
         elif command == "prev":
             pos_sec = max(pos_sec-10, 0)
+        if op_start_sec <= pos_sec <= op_end_sec:
+            pos_sec = op_end_sec
 
     return seconds_to_time(pos_sec)

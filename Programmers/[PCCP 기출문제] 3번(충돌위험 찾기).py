@@ -4,7 +4,7 @@ def solution(points, routes):
     
     for i in range(len(routes)):
         for j in range(len(routes[i])):
-            if j == len(routes[i]) - 1:
+            if j == len(routes[i])-1:
                 break
             
             nowx, nowy = points[routes[i][j]-1]
@@ -28,7 +28,7 @@ def solution(points, routes):
                     result[i].append([nowx, nowy])
                     nowy += 1
             
-            if j == len(routes[i]) - 2:
+            if j == len(routes[i])-2:
                 result[i].append([targetx, targety])
                 
         if not result[i]:
@@ -37,17 +37,21 @@ def solution(points, routes):
     maxlen = max(len(route) for route in result)
     
     for i in range(len(result)):
-        diff = maxlen - len(result[i])
+        diff = maxlen-len(result[i])
         if result[i]:
             for _ in range(diff):
-                result[i].append(result[i][-1])
+                result[i].append([0, 0])
     
     for j in range(len(result[0])):
-        temp = set()
+        graph = [[0]*101 for _ in range(101)]
         for i in range(len(result)):
-            temp.add((result[i][j][0], result[i][j][1]))
+            graph[result[i][j][0]][result[i][j][1]] += 1
         
-        if len(temp) != len(result):
-            answer += 1
+        for r in range(len(graph)):
+            for c in range(len(graph[r])):
+                if r == 0 and c == 0:
+                    continue
+                if graph[r][c] >= 2:
+                    answer += 1
 
     return answer

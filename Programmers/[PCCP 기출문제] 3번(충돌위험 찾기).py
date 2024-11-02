@@ -1,57 +1,55 @@
+from collections import defaultdict
+
 def solution(points, routes):
     answer = 0
-    result = [[] for _ in range(len(routes))]
-    
-    for i in range(len(routes)):
-        for j in range(len(routes[i])):
-            if j == len(routes[i])-1:
-                break
-            
-            nowx, nowy = points[routes[i][j]-1]
-            targetx, targety = points[routes[i][j+1]-1]
+    paths = []
 
+    # 각 로봇의 경로를 사전 계산하여 좌표별로 저장
+    for route in routes:
+        path = []
+        for j in range(len(route) - 1):
+            nowx, nowy = points[route[j] - 1]
+            targetx, targety = points[route[j + 1] - 1]
+            
+            # x축 이동
             if nowx < targetx:
                 while nowx < targetx:
-                    result[i].append([nowx, nowy])
+                    path.append((nowx, nowy))
                     nowx += 1
-            else:
+            elif nowx > targetx:
                 while nowx > targetx:
-                    result[i].append([nowx, nowy])
+                    path.append((nowx, nowy))
                     nowx -= 1
-
-            if nowy > targety:
-                while nowy > targety:
-                    result[i].append([nowx, nowy])
-                    nowy -= 1
-            else:
+            
+            # y축 이동
+            if nowy < targety:
                 while nowy < targety:
-                    result[i].append([nowx, nowy])
+                    path.append((nowx, nowy))
                     nowy += 1
+            elif nowy > targety:
+                while nowy > targety:
+                    path.append((nowx, nowy))
+                    nowy -= 1
             
-            if j == len(routes[i])-2:
-                result[i].append([targetx, targety])
-                
-        if not result[i]:
-            result[i].append([nowx, nowy])
-            
-    maxlen = max(len(route) for route in result)
-    
-    for i in range(len(result)):
-        diff = maxlen-len(result[i])
-        if result[i]:
-            for _ in range(diff):
-                result[i].append([0, 0])
-    
-    for j in range(len(result[0])):
-        graph = [[0]*101 for _ in range(101)]
-        for i in range(len(result)):
-            graph[result[i][j][0]][result[i][j][1]] += 1
+            # 마지막 목적지 좌표 추가
+            path.append((targetx, targety))
         
-        for r in range(len(graph)):
-            for c in range(len(graph[r])):
-                if r == 0 and c == 0:
-                    continue
-                if graph[r][c] >= 2:
+        paths.append(path)
+
+    # 시간별 좌표에 대한 충돌 여부를 추적
+    time_position_count = defaultdict(int)
+    max_steps = max(len(path) for path in paths)
+
+    for time in range(max_steps):
+        # 현재 시간의 각 로봇 위치를 갱신
+        current_positions = set()
+        for i, path in enumerate(paths):
+            if time < len(path):  # 현재 경로의 위치가 유효할 때
+                pos = path[time]
+                if pos in current_positions:
                     answer += 1
+                else:
+                    current_positions.add(pos)
+                time_position_count[(time, pos)] += 1
 
     return answer

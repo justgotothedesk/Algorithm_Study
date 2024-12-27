@@ -1,5 +1,5 @@
 import sys
-input = sys.stdin.readline()
+input = sys.stdin.readline
 
 n = int(input())
 member = []
@@ -9,7 +9,7 @@ for i in range(n):
     age = int(age)
     member.append((age, name))
 
-member.sort(key = lambda x : x[0])
+member.sort(key = lambda x:x[0])
 
 for i in member:
     print(i[0], i[1])

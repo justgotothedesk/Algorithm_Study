@@ -1,13 +1,16 @@
+import sys
+input = sys.stdin.readline
+
 n = int(input())
+A = list(map(int, input().split()))
+B = list(map(int, input().split()))
 
-a = list(map(int, input().split()))
-b = list(map(int, input().split()))
+A.sort()
+B.sort(reverse=True)
 
-b.sort()
-a.sort(reverse = True)
-result = 0
+answer = 0
 
 for i in range(n):
-  result += (a[i]*b[i])
-
-print(result)
+    answer += A[i]*B[i]
+    
+print(answer)    

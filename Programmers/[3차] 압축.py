@@ -12,7 +12,7 @@ def solution(msg):
     start = 0
     end = len(msg)
     
-    while start < len(msg):
+    while start < end:
         if msg[start:end] in alpha:
             answer.append(alpha.index(msg[start:end])+1)
             alpha.append(msg[start:end+1])
@@ -20,5 +20,5 @@ def solution(msg):
             end = len(msg)
         else:
             end -= 1
-    
+        
     return answer

@@ -6,7 +6,6 @@
 # 교집합/합집합의 값을 반환한다.
 
 def solution(str1, str2):
-    answer = 0
     A = []
     B = []
     str1 = str1.lower()
@@ -18,8 +17,8 @@ def solution(str1, str2):
     for i in range(len(str2)-1):
         if str2[i].isalpha() and str2[i+1].isalpha():
             B.append(str2[i]+str2[i+1])
-    
-    if len(A) == 0 and len(B) == 0:
+            
+    if not len(A) and not len(B):
         return 65536
     
     hap = len(A)+len(B)
@@ -29,10 +28,8 @@ def solution(str1, str2):
         for b in B:
             if a == b:
                 kyo += 1
-                B.remove(b)
+                B.remove(a)
                 hap -= 1
                 break
     
-    answer = int(kyo/hap*65536)
-    
-    return answer
+    return int(kyo/hap*65536)

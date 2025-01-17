@@ -3,20 +3,28 @@
 
 def solution(record):
     answer = []
-    info = {}
-    for i in record:
-        i = i.split()
-        # 사용자가 들어온 경우
-        if i[0] == "Enter":
-            info[i[1]] = i[2]
-            answer.append([i[1], "님이 들어왔습니다."])
-          
-        # 사용자가 나간 경우
-        elif i[0] == "Leave":
-            answer.append([i[1], "님이 나갔습니다."])
+    temp = []
+    history = {}
+    
+    for r in record:
+        r = r.split(" ")
         
-        # 사용자의 닉네임을 변경한 경우
+        if len(r) == 3:
+            do, uid, name = r[0], r[1], r[2]
+            if uid not in history.keys() or do == "Change":
+                history[uid] = name
+            elif do == "Enter" and uid in history.keys():
+                history[uid] = name
+            temp.append([do, uid, name])
+        elif len(r) == 2:
+            do, uid = r[0], r[1]
+            temp.append([do, uid])
+    
+    for t in temp:
+        if len(t) == 2:
+            answer.append(history[t[1]]+"님이 나갔습니다.")
         else:
-            info[i[1]] = i[2]
-    answer = list(map(lambda x : info[x[0]]+x[1], answer))
+            if t[0] == "Enter":
+                answer.append(history[t[1]]+"님이 들어왔습니다.")
+    
     return answer

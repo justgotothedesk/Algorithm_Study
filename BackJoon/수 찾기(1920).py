@@ -29,3 +29,11 @@ for x in arr2:
         print(1)
     else:
         print(0)
+
+# 좀 더 간단한 방법
+ 
+for i in range(len(arr2)):
+    if arr2[i] in arr:
+        print(1)
+    else:
+        print(0)

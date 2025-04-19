@@ -5,23 +5,25 @@
 from collections import deque
 
 def solution(priorities, location):
-    answer = 0
-    que = deque(priorities)
-    my = [0 for _ in range(len(priorities))]
-    my[location] = 1
-    my = deque(my)
+    answer = 1
+    q = deque(priorities)
+    temp = [0]*len(priorities)
+    temp[location] = 1
+    idxq = deque(temp)
     
-    while(my):
-        value = que.popleft()
-        check = my.popleft()
-
-        # 더 높은 우선순위가 있는 경우
-        if len(que) > 1 and max(que) > value:
-            que.append(value)
-            my.append(check)
-        else:
+    while q:
+        now = q.popleft()
+        idx = idxq.popleft()
+        
+        if not q:
+            return answer
+        
+        if max(q) <= now:
+            if now == priorities[location] and idx:
+                return answer
             answer += 1
-            if check == 1:
-                break
-            
+        else:
+            q.append(now)
+            idxq.append(idx)
+    
     return answer

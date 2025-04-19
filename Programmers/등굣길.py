@@ -1,33 +1,33 @@
 def solution(m, n, puddles):
     answer = 0
-    maps = [[0]*m for _ in range(n)]
-    for x, y in puddles:
-        maps[y-1][x-1] = "X"
+    graph = [[0]*m for _ in range(n)]
+    
+    for puddle in puddles:
+        c, r = puddle
+        graph[r-1][c-1] = "X"
         
-    for i in range(len(maps[0])):
-        if maps[0][i] == "X":
+    for i in range(len(graph)):
+        if graph[i][0] != "X":
+            graph[i][0] = 1
+        else:
             break
-        maps[0][i] = 1
     
-    for i in range(len(maps)):
-        if maps[i][0] == "X":
+    for i in range(len(graph[0])):
+        if graph[0][i] != "X":
+            graph[0][i] = 1
+        else:
             break
-        maps[i][0] = 1
     
-    for i in range(len(maps)):
-        for j in range(len(maps[i])):
-            if i == 0 or j == 0 or maps[i][j] == "X":
+    for i in range(1, len(graph)):
+        for j in range(1, len(graph[i])):
+            if graph[i][j] == "X":
                 continue
-            if maps[i-1][j] != "X":
-                one = maps[i-1][j]
-            else:
+            one = graph[i-1][j]
+            two = graph[i][j-1]
+            if one == "X":
                 one = 0
-            if maps[i][j-1] != "X":
-                two = maps[i][j-1]
-            else:
+            if two == "X":
                 two = 0
-            maps[i][j] = (one+two)
-                
-    answer = maps[-1][-1]%1_000_000_007
-  
-    return answer
+            graph[i][j] = one+two
+    
+    return graph[-1][-1]%1000000007
